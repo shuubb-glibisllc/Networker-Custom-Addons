@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <!-- define controller template -->
+  <t t-name="networker_crm.CustomKanbanView" t-inherit="web.KanbanView">
+    <!-- insert UI right before the Layout (safe anchor in v18) -->
+    <xpath expr="//Layout" position="before">
+      <button type="button" class="btn btn-secondary o_btn_gen_from_contacts" t-on-click="openGenerateWizard">
+        <i class="fa fa-database"/> Generate from Contacts
+      </button>
+    </xpath>
+  </t>
+</templates>

@@ -1,0 +1,4 @@
+/* Hide the original IAP “Generate Leads” button if present */
+button.o_button_iap_lead_mining,
+button[data-action-name="crm_iap_lead_mining_request"],
+.o_control_panel .btn:has(> .fa-magic) { display: none !important; }

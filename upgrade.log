@@ -1,0 +1,18 @@
+[2025-08-22 12:55:27] Upgrading: upgrade.log
+[2025-08-22 12:57:50] === START watcher ===
+[2025-08-22 12:57:50] PWD=/home/shuubb/Desktop/Networker Odoo/Custom Addons  ADDONS_ROOT=/home/shuubb/Desktop/Networker Odoo/Custom Addons
+[2025-08-22 12:57:50] Using ODOO_CONF=/home/shuubb/Desktop/odoo_dev/addons/odoo.conf
+[2025-08-22 12:57:50] Entering watch mode for db=networker_db
+[2025-08-22 12:57:50] BrowserSync started pid=207206, proxy=http://localhost:8069
+[2025-08-22 12:57:50] Files to watch: 4
+[2025-08-22 12:57:50] Watcher: entr
+[2025-08-22 12:58:58] EXIT code=0
+[2025-08-22 12:58:58] === START watcher ===
+[2025-08-22 12:58:58] PWD=/home/shuubb/Desktop/Networker Odoo/Custom Addons
+[2025-08-22 12:58:58] Using ODOO_CONF=/home/shuubb/Desktop/odoo_dev/addons/odoo.conf
+[2025-08-22 12:58:58] Entering watch mode for db=networker_db
+[2025-08-22 12:58:58] BrowserSync started pid=207402, proxy=http://localhost:8069
+[2025-08-22 12:58:58] Files to watch: 4
+[2025-08-22 12:58:58] Watcher: entr
+[2025-08-22 12:58:58] CHANGE: /home/shuubb/Desktop/Networker Odoo/Custom Addons/upgrade.log (module=upgrade.log)
+[2025-08-22 13:00:34] EXIT code=0

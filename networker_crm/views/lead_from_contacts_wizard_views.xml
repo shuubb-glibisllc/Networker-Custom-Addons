@@ -1,0 +1,33 @@
+<odoo>
+  <record id="view_lead_from_contacts_wizard" model="ir.ui.view">
+    <field name="name">lead.from.contacts.wizard.form</field>
+    <field name="model">lead.from.contacts.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Generate Leads from Contacts">
+        <group>
+          <group>
+            <field name="number_leads"/>
+            <field name="companies_only"/>
+            <field name="industry_ids" widget="many2many_tags"/>
+          </group>
+          <group>
+            <field name="user_id"/>
+            <field name="tag_ids" widget="many2many_tags"/>
+          </group>
+        </group>
+        <footer>
+          <button name="action_generate" type="object" class="btn btn-primary" string="Generate Leads"/>
+          <button string="Cancel" class="btn btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_lead_from_contacts_wizard" model="ir.actions.act_window">
+    <field name="name">Generate from Contacts</field>
+    <field name="res_model">lead.from.contacts.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+    <field name="view_id" ref="view_lead_from_contacts_wizard"/>
+  </record>
+</odoo>
