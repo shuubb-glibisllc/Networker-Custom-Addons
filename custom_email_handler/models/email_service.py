@@ -164,6 +164,31 @@ class SendGridConfig(models.Model):
             _logger.warning("[SendGrid] HTML to plain text conversion failed: %s", e)
             return ""
 
+    def _add_sendgrid_categories(self, msg, categories):
+        """Add categories in a version-agnostic way for different SendGrid library versions"""
+        if not categories:
+            return
+            
+        for category_name in categories:
+            try:
+                # Method 1: Try using Category object (newer versions)
+                msg.add_category(Category(category_name))
+                _logger.debug("[SendGrid] Added category using Category object: %s", category_name)
+            except (AttributeError, TypeError, NameError):
+                try:
+                    # Method 2: Try direct string addition (some versions)
+                    msg.add_category(category_name)
+                    _logger.debug("[SendGrid] Added category using string: %s", category_name)
+                except (AttributeError, TypeError):
+                    try:
+                        # Method 3: Direct assignment to categories list (fallback)
+                        if not hasattr(msg, 'categories') or msg.categories is None:
+                            msg.categories = []
+                        msg.categories.append(category_name)
+                        _logger.debug("[SendGrid] Added category to list: %s", category_name)
+                    except Exception as e:
+                        _logger.warning("[SendGrid] Failed to add category %s: %s", category_name, e)
+
     def _send_via_sendgrid(self, to_emails, subject, body_html, attachments=None, cc=None, bcc=None, reply_to=None):
         t0 = time.time()
         key = (self.api_key or "").strip()
@@ -204,8 +229,8 @@ class SendGridConfig(models.Model):
         msg.add_header(Header("X-Auto-Response-Suppress", "OOF, DR, RN, NRN"))  # Suppress auto-responses
         
         # Add transactional email indicators to avoid promotions folder
-        msg.add_category(Category("transactional"))  # SendGrid category for transactional emails
-        msg.add_category(Category("business"))       # Business communication category
+        # Version-agnostic category handling for different SendGrid library versions
+        self._add_sendgrid_categories(msg, ["transactional", "business"])
         
         # Set mail settings for better deliverability
         try:
