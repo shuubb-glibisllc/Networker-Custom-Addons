@@ -13,6 +13,7 @@ from sendgrid.helpers.mail import (
     Mail, Email, Attachment, FileContent, FileName, FileType, Disposition, ReplyTo
 )
 from sendgrid.helpers.mail.header import Header
+from sendgrid.helpers.mail.category import Category
 
 _logger = logging.getLogger(__name__)
 
@@ -203,8 +204,8 @@ class SendGridConfig(models.Model):
         msg.add_header(Header("X-Auto-Response-Suppress", "OOF, DR, RN, NRN"))  # Suppress auto-responses
         
         # Add transactional email indicators to avoid promotions folder
-        msg.add_category("transactional")  # SendGrid category for transactional emails
-        msg.add_category("business")       # Business communication category
+        msg.add_category(Category("transactional"))  # SendGrid category for transactional emails
+        msg.add_category(Category("business"))       # Business communication category
         
         # Set mail settings for better deliverability
         try:
