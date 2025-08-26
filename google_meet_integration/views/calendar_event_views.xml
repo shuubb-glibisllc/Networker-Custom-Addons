@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Calendar Event Inherited Views -->
+    
+    <!-- Form View Inheritance -->
+    <record id="view_calendar_event_form_inherit" model="ir.ui.view">
+        <field name="name">calendar.event.form.inherit</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_google_meet" type="object" string="Create Google Meet" 
+                        class="btn-primary" invisible="has_google_meet"/>
+                <button name="action_join_google_meet" type="object" string="Join Google Meet" 
+                        class="btn-success" invisible="not has_google_meet"/>
+            </xpath>
+            <xpath expr="//field[@name='location']" position="after">
+                <field name="has_google_meet" invisible="1"/>
+                <field name="google_meet_id" readonly="1" invisible="not has_google_meet"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Override calendar form view to replace Odoo meeting with Google Meeting -->
+    <record id="view_calendar_event_form_inherit_google" model="ir.ui.view">
+        <field name="name">calendar.event.form.inherit.google</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <!-- Replace first instance of "Odoo meeting" -->
+            <xpath expr="//button[@name='set_discuss_videocall_location']//span[text()=' Odoo meeting']" position="replace">
+                <span> Google Meeting</span>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Override calendar quick create view to replace Odoo meeting with Google Meeting -->
+    <record id="view_calendar_event_form_popup_inherit_google" model="ir.ui.view">
+        <field name="name">calendar.event.form.popup.inherit.google</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form_popup"/>
+        <field name="arch" type="xml">
+            <!-- Replace second instance of "Odoo meeting" -->
+            <xpath expr="//button[@name='set_discuss_videocall_location']//span[text()='Odoo meeting']" position="replace">
+                <span>Google Meeting</span>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View Inheritance -->
+    <record id="view_calendar_event_tree_inherit" model="ir.ui.view">
+        <field name="name">calendar.event.tree.inherit</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='start']" position="after">
+                <field name="has_google_meet" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
