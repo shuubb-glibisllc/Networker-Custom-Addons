@@ -1,6 +1,6 @@
 {
     'name': 'Google Meet Integration',
-    'version': '16.0.1.0.0',
+    "version": "18.0.2.0.2",
     'category': 'Productivity',
     'summary': 'Integration with Google Meet for creating and managing meetings',
     'description': """
@@ -13,7 +13,7 @@ This module provides integration with Google Meet API to:
 * Track meeting history
     """,
     'author': 'Your Company',
-    'website': 'https://www.yourcompany.com',
+    'website': 'https://www.glibisllc.com',
     'license': 'LGPL-3',
     'depends': [
         'base',
@@ -22,9 +22,9 @@ This module provides integration with Google Meet API to:
         'google_calendar',
     ],
     'data': [
-        'security/ir.model.access.csv',
-        'views/google_meet_views.xml',
         'views/calendar_event_views.xml',
+        'views/google_meet_config.xml',
+        'views/oauth_templates.xml',
     ],
     'installable': True,
     'application': False,

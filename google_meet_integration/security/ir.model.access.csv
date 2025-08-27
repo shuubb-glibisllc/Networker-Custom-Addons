@@ -1,3 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_google_meet_meeting_user,google.meet.meeting.user,model_google_meet_meeting,base.group_user,1,1,1,1
-access_google_meet_meeting_public,google.meet.meeting.public,model_google_meet_meeting,,1,0,0,0

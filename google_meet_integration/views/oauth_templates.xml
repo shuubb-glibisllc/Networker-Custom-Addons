@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- OAuth Success Template -->
+    <template id="oauth_success" name="Google Meet OAuth Success">
+        <t t-call="web.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fa fa-check-circle text-success" style="font-size: 3rem;"></i>
+                                </div>
+                                <h3 class="card-title text-success">Google Meet Integration Enabled!</h3>
+                                <p class="card-text">
+                                    <t t-if="has_refresh_token">
+                                        ✅ Refresh token saved successfully.<br/>
+                                        Google Meet integration is now fully configured and will work permanently.
+                                    </t>
+                                    <t t-if="not has_refresh_token">
+                                        ⚠️ Access token saved, but no refresh token received.<br/>
+                                        This may happen if you've already authorized this app before.<br/>
+                                        The integration will work until the access token expires.
+                                    </t>
+                                </p>
+                                <div class="mt-4">
+                                    <a href="/web#action=base.action_res_config_settings" class="btn btn-primary">
+                                        Go to Settings
+                                    </a>
+                                    <a href="/web" class="btn btn-secondary ml-2">
+                                        Back to Odoo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- OAuth Error Template -->
+    <template id="oauth_error" name="Google Meet OAuth Error">
+        <t t-call="web.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fa fa-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                                </div>
+                                <h3 class="card-title text-danger">OAuth Error</h3>
+                                <p class="card-text">
+                                    <strong>Error:</strong> <t t-esc="error"/>
+                                </p>
+                                <div class="mt-4">
+                                    <a href="/google_meet/oauth/connect" class="btn btn-primary">
+                                        Try Again
+                                    </a>
+                                    <a href="/web" class="btn btn-secondary ml-2">
+                                        Back to Odoo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- OAuth Revoked Template -->
+    <template id="oauth_revoked" name="Google Meet OAuth Revoked">
+        <t t-call="web.layout">
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <i class="fa fa-info-circle text-info" style="font-size: 3rem;"></i>
+                                </div>
+                                <h3 class="card-title text-info">Google Meet Integration Disabled</h3>
+                                <p class="card-text">
+                                    Google Meet integration has been disabled and tokens have been cleared.
+                                </p>
+                                <div class="mt-4">
+                                    <a href="/google_meet/oauth/connect" class="btn btn-primary">
+                                        Re-enable Integration
+                                    </a>
+                                    <a href="/web" class="btn btn-secondary ml-2">
+                                        Back to Odoo
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -8,15 +8,14 @@
         <field name="model">calendar.event</field>
         <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//header" position="inside">
-                <button name="action_create_google_meet" type="object" string="Create Google Meet" 
-                        class="btn-primary" invisible="has_google_meet"/>
-                <button name="action_join_google_meet" type="object" string="Join Google Meet" 
-                        class="btn-success" invisible="not has_google_meet"/>
+            <xpath expr="//form/div[@invisible]" position="after">
+                <header>
+                    <button name="action_join_google_meet" type="object" string="Join Google Meet" 
+                            class="btn-success" invisible="not google_meet_url"/>
+                </header>
             </xpath>
             <xpath expr="//field[@name='location']" position="after">
-                <field name="has_google_meet" invisible="1"/>
-                <field name="google_meet_id" readonly="1" invisible="not has_google_meet"/>
+                <field name="google_meet_url" readonly="1" invisible="not google_meet_url"/>
             </xpath>
         </field>
     </record>
@@ -38,7 +37,7 @@
     <record id="view_calendar_event_form_popup_inherit_google" model="ir.ui.view">
         <field name="name">calendar.event.form.popup.inherit.google</field>
         <field name="model">calendar.event</field>
-        <field name="inherit_id" ref="calendar.view_calendar_event_form_popup"/>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form_quick_create"/>
         <field name="arch" type="xml">
             <!-- Replace second instance of "Odoo meeting" -->
             <xpath expr="//button[@name='set_discuss_videocall_location']//span[text()='Odoo meeting']" position="replace">
@@ -54,7 +53,7 @@
         <field name="inherit_id" ref="calendar.view_calendar_event_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='start']" position="after">
-                <field name="has_google_meet" optional="hide"/>
+                <field name="google_meet_url" optional="hide"/>
             </xpath>
         </field>
     </record>

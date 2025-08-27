@@ -1,0 +1,33 @@
+<odoo>
+    <record id="view_google_meet_config_form" model="ir.ui.view">
+        <field name="name">google.meet.config.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="google_calendar.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='cal_sync_paused']/.." position="after">
+                <div class="mt16">
+                    <div class="d-flex align-items-center">
+                        <label string="Google Meet Integration" for="google_meet_enabled" class="o_light_label me-3"/>
+                        <field name="google_meet_enabled" readonly="1" class="me-3"/>
+                        <a href="/google_meet/oauth/connect" class="btn btn-primary btn-sm me-2" invisible="google_meet_enabled">
+                            Connect Google Meet
+                        </a>
+                        <a href="/google_meet/oauth/revoke" class="btn btn-outline-danger btn-sm" invisible="not google_meet_enabled">
+                            Disconnect
+                        </a>
+                    </div>
+                    <div class="mt8 text-muted" invisible="not google_meet_enabled">
+                        ✅ Google Meet integration is active
+                    </div>
+                    <div class="mt8 text-muted" invisible="google_meet_enabled">
+                        Click "Connect Google Meet" to enable Google Meet link creation in calendar events.<br/>
+                        <small>
+                            <strong>Important:</strong> Add this redirect URI to your Google Cloud Console OAuth app:<br/>
+                            <field name="google_meet_redirect_uri" readonly="1" class="o_text_monospaced"/>
+                        </small>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
