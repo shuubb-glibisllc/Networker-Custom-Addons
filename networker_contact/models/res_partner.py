@@ -17,3 +17,12 @@ class ResPartner(models.Model):
             "view_mode": "form",
             "target": "new",
         }
+
+    def action_fetch_legal_name(self):
+        """Fetch legal name from Georgian registry"""
+        self.ensure_one()
+        wiz = self.env["partner.napr.fetch.wizard"].create({
+            "partner_id": self.id,
+            "vat": self.vat or "",
+        })
+        return wiz.action_fetch_legal_name()

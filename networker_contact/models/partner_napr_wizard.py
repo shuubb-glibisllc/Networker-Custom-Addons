@@ -114,6 +114,33 @@ class PartnerNaprFetchWizard(models.TransientModel):
         m = ID_REGEX.search(html or "")
         return m.group(1) if m else ""
 
+    def _extract_legal_name(self, html: str) -> str:
+        """Extract legal name from the search results table"""
+        import re
+        
+        # Based on your example, the name is in a td with whitespace around it
+        # Look for pattern like: <td valign="top">     შპს ტრონიქს ჯორჯია  </td>
+        name_pattern = r'<td valign="top">\s*([^\d<][^<]*?)\s*</td>'
+        matches = re.findall(name_pattern, html or "", re.DOTALL | re.MULTILINE)
+        
+        for match in matches:
+            cleaned = match.strip()
+            # Valid company name: 
+            # - Not empty, not just numbers
+            # - Not status text like "აქტიური"
+            # - Not legal form like "შეზღუდული პასუხისმგებლობის საზოგადოება"
+            # - Contains Georgian characters or common prefixes
+            if (cleaned and 
+                not re.match(r'^\d+$', cleaned) and
+                cleaned not in ['', '&nbsp;'] and
+                'აქტიური' not in cleaned and
+                'შეზღუდული პასუხისმგებლობის საზოგადოება' not in cleaned and
+                ('შპს' in cleaned or 'ოოო' in cleaned or 'სს' in cleaned or
+                 any('ა' <= c <= 'ჰ' for c in cleaned))):
+                return cleaned
+                
+        return ""
+
     def _extract_docs(self, html: str, vat: str, company_id: str):
         docs = []
         # primary: paired link + visible .djvu name
@@ -358,4 +385,40 @@ class PartnerNaprFetchWizard(models.TransientModel):
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {"title": "NAPR", "message": msg, "sticky": False},
+        }
+
+    def action_fetch_legal_name(self):
+        """Fetch legal name from Georgian registry and update partner name"""
+        self.ensure_one()
+        if not (self.partner_id.vat or "").strip():
+            raise UserError(_("Set Legal Code ID (VAT) on the contact first."))
+
+        vat = self.partner_id.vat.strip()
+        _logger.info("NAPR: fetching legal name for VAT=%s", vat)
+
+        s = self._new_session()
+        
+        # Search for the company using VAT
+        params = {"c": "search", "m": "find_legal_persons", "s_legal_person_idnumber": vat}
+        r = s.get(SEARCH_URL, params=params, timeout=30)
+        html = self._decode_html(r)
+        _logger.debug("NAPR: search url=%s status=%s len=%d", r.url, r.status_code, len(html))
+        r.raise_for_status()
+
+        # Extract legal name from the response
+        legal_name = self._extract_legal_name(html)
+        if not legal_name:
+            self._dump_text(f"napr_legal_name_search_{vat}", html)
+            raise UserError(_("Could not find legal name for VAT %s") % vat)
+
+        # Update partner name
+        self.partner_id.write({"name": legal_name})
+        
+        _logger.info("NAPR: updated partner name to '%s' for VAT=%s", legal_name, vat)
+        return {
+            "type": "ir.actions.act_window",
+            "res_model": "res.partner",
+            "res_id": self.partner_id.id,
+            "view_mode": "form",
+            "target": "current",
         }
