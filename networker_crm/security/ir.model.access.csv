@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_lead_from_contacts_wizard,access_lead_from_contacts_wizard,model_lead_from_contacts_wizard,base.group_user,1,1,1,1
+access_lead_from_contacts_wizard_public,access_lead_from_contacts_wizard_public,model_lead_from_contacts_wizard,base.group_public,1,1,1,1
+access_lead_from_contacts_wizard_portal,access_lead_from_contacts_wizard_portal,model_lead_from_contacts_wizard,base.group_portal,1,1,1,1

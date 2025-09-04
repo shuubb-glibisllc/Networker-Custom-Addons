@@ -25,4 +25,10 @@ class ResPartner(models.Model):
             "partner_id": self.id,
             "vat": self.vat or "",
         })
-        return wiz.action_fetch_legal_name()
+        result = wiz.action_fetch_legal_name()
+        
+        # After successful fetch, save legal name to x_studio_legal_name field
+        if hasattr(self, 'x_studio_legal_name') and self.name:
+            self.write({'x_studio_legal_name': self.name})
+            
+        return result

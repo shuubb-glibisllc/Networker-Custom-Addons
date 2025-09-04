@@ -12,7 +12,9 @@
           </group>
           <group>
             <field name="user_id"/>
-            <field name="tag_ids" widget="many2many_tags"/>
+            <field name="tag_ids" widget="many2many_tags" string="Tags"/>
+            <field name="legal_status_ids" widget="many2many_tags" string="Legal Status Filter" options="{'no_create': True, 'no_quick_create': True}" context="{'active_test': False}"/>
+            <field name="legal_form_ids" widget="many2many_tags" string="Legal Form Filter" options="{'no_create': True, 'no_quick_create': True}" context="{'active_test': False}"/>
           </group>
         </group>
         <footer>

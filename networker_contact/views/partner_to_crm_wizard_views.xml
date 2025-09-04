@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- Wizard Form View -->
+  <record id="view_partner_to_crm_wizard_form" model="ir.ui.view">
+    <field name="name">partner.to.crm.wizard.form</field>
+    <field name="model">partner.to.crm.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Convert Contacts to CRM Leads">
+        <sheet>
+          <group>
+            <group>
+              <field name="partner_ids" widget="many2many_tags" readonly="1" string="Selected Contacts"/>
+              <field name="team_id" required="1"/>
+              <field name="stage_id" required="1"/>
+              <field name="user_id"/>
+            </group>
+            <group>
+              <field name="priority"/>
+              <field name="source_id"/>
+              <field name="medium_id"/>
+              <field name="campaign_id"/>
+            </group>
+          </group>
+          <group>
+            <field name="description" placeholder="Add internal notes for all leads..."/>
+          </group>
+        </sheet>
+        <footer>
+          <button string="Convert to Leads" name="action_convert_to_crm" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- Server Action -->
+  <record id="action_partner_to_crm" model="ir.actions.server">
+    <field name="name">Convert to CRM Leads</field>
+    <field name="model_id" ref="base.model_res_partner"/>
+    <field name="binding_model_id" ref="base.model_res_partner"/>
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+wizard = env['partner.to.crm.wizard'].create({})
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Convert to CRM Leads',
+    'res_model': 'partner.to.crm.wizard',
+    'res_id': wizard.id,
+    'view_mode': 'form',
+    'target': 'new',
+    'context': dict(env.context, active_ids=context.get('active_ids', []))
+}
+    </field>
+  </record>
+
+</odoo>

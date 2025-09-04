@@ -4,6 +4,7 @@
     "depends": ["web", "crm"],
     "data": [
         "security/ir.model.access.csv",
+        "data/crm_lead_actions.xml",
         "views/lead_from_contacts_wizard_views.xml",
         "views/crm_lead_kanban_inherit.xml",
     ],
