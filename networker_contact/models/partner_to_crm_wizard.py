@@ -52,10 +52,25 @@ class PartnerToCrmWizard(models.TransientModel):
         if not self.partner_ids:
             raise UserError(_("No contacts selected for conversion."))
         
-        leads_created = []
+        # Check if any partners can be converted (don't have opportunities)
         Lead = self.env['crm.lead']
+        convertible_partners = []
         
         for partner in self.partner_ids:
+            existing_opportunities = Lead.search([
+                ('partner_id', '=', partner.id),
+                ('type', '=', 'opportunity')
+            ], limit=1)
+            if not existing_opportunities:
+                convertible_partners.append(partner)
+        
+        if not convertible_partners:
+            raise UserError(_("All selected contacts already have opportunities and cannot be converted to leads."))
+        
+        leads_created = []
+        
+        for partner in convertible_partners:
+            
             # Check if lead already exists for this partner
             existing_lead = Lead.search([
                 ('partner_id', '=', partner.id),
