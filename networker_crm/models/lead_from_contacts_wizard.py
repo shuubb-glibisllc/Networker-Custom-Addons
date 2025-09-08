@@ -208,6 +208,7 @@ class LeadFromContactsWizard(models.TransientModel):
         if not limit:
             return {"type": "ir.actions.act_window_close"}
 
+        # Get all partners matching domain filters
         partners = self.env["res.partner"].search(self._build_partner_domain())
 
         # Check if no partners found with current filters
@@ -223,8 +224,32 @@ class LeadFromContactsWizard(models.TransientModel):
                 }
             }
 
-        # Filter partners to only include those with fetchable legal names
-        valid_partners = self._filter_partners_with_fetchable_names(partners)
+        # OPTIMIZATION: First filter out partners that already have leads (fast database operation)
+        existing = self.env["crm.lead"].read_group(
+            domain=[("partner_id", "in", partners.ids), ("active", "=", True)],
+            fields=["partner_id"], groupby=["partner_id"]
+        )
+        skip_ids = {r["partner_id"][0] for r in existing if r.get("partner_id")}
+        partners_without_leads = [p for p in partners if p.id not in skip_ids]
+        
+        # Check if no partners without existing leads
+        if not partners_without_leads:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": _("No New Leads to Generate"),
+                    "message": _("All matching partners already have active leads. No new leads were created."),
+                    "type": "info",
+                    "sticky": True
+                }
+            }
+
+        # OPTIMIZATION: Apply limit before fetching names (process only what we need)
+        partners_to_process = partners_without_leads[:limit]
+
+        # Now fetch legal names only for the limited set of partners
+        valid_partners = self._filter_partners_with_fetchable_names(self.env['res.partner'].browse([p.id for p in partners_to_process]))
         
         # Check if no valid partners after name fetching
         if not valid_partners:
@@ -239,18 +264,8 @@ class LeadFromContactsWizard(models.TransientModel):
                 }
             }
 
-        # Use the filtered partners for lead generation
-        partners = valid_partners
-
-        existing = self.env["crm.lead"].read_group(
-            domain=[("partner_id", "in", partners.ids), ("active", "=", True)],
-            fields=["partner_id"], groupby=["partner_id"]
-        )
-        skip_ids = {r["partner_id"][0] for r in existing if r.get("partner_id")}
-        partners_without_leads = [p for p in partners if p.id not in skip_ids]
-        
-        # Apply the limit after filtering out partners with existing leads
-        partners_to_create = partners_without_leads[:limit]
+        # These are the final partners to create leads from
+        partners_to_create = [p for p in valid_partners]
         
         to_create = [
             {
