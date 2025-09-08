@@ -52,43 +52,29 @@ class PartnerToCrmWizard(models.TransientModel):
         if not self.partner_ids:
             raise UserError(_("No contacts selected for conversion."))
         
-        # Check if any partners can be converted (don't have opportunities)
+        # Check if any partners can be converted (don't have any existing leads)
         Lead = self.env['crm.lead']
         convertible_partners = []
         
         for partner in self.partner_ids:
-            existing_opportunities = Lead.search([
-                ('partner_id', '=', partner.id),
-                ('type', '=', 'opportunity')
+            existing_leads = Lead.search([
+                ('partner_id', '=', partner.id)
             ], limit=1)
-            if not existing_opportunities:
+            if not existing_leads:
                 convertible_partners.append(partner)
         
         if not convertible_partners:
-            raise UserError(_("All selected contacts already have opportunities and cannot be converted to leads."))
+            raise UserError(_("All selected contacts already have linked leads and cannot be converted."))
         
         leads_created = []
         
         for partner in convertible_partners:
-            
-            # Check if lead already exists for this partner
-            existing_lead = Lead.search([
-                ('partner_id', '=', partner.id),
-                ('type', '=', 'lead')
-            ], limit=1)
-            
-            if existing_lead:
-                # Update existing lead instead of creating new one
-                vals = self._prepare_lead_values(partner, update=True)
-                existing_lead.write(vals)
-                leads_created.append(existing_lead)
-            else:
-                # Create new lead
-                vals = self._prepare_lead_values(partner)
-                lead = Lead.create(vals)
-                leads_created.append(lead)
+            # Create new lead (we already filtered out partners with existing leads)
+            vals = self._prepare_lead_values(partner)
+            lead = Lead.create(vals)
+            leads_created.append(lead)
         
-        # Return action to view created/updated leads
+        # Return action to view created leads
         if len(leads_created) == 1:
             return {
                 'type': 'ir.actions.act_window',
@@ -108,8 +94,8 @@ class PartnerToCrmWizard(models.TransientModel):
                 'target': 'current',
             }
 
-    def _prepare_lead_values(self, partner, update=False):
-        """Prepare values for lead creation/update"""
+    def _prepare_lead_values(self, partner):
+        """Prepare values for lead creation"""
         vals = {
             'name': f"Lead from {partner.name or partner.email or 'Contact'}",
             'partner_id': partner.id,
@@ -135,9 +121,5 @@ class PartnerToCrmWizard(models.TransientModel):
         
         if self.description:
             vals['description'] = self.description
-            
-        # Don't overwrite existing data when updating unless explicitly set
-        if update:
-            vals = {k: v for k, v in vals.items() if v or k in ['team_id', 'stage_id', 'priority']}
             
         return vals
