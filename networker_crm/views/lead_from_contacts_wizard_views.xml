@@ -8,10 +8,12 @@
           <group>
             <field name="number_leads"/>
             <field name="industry_ids" widget="many2many_tags"/>
+            <field name="contact_usage_filter" widget="radio"/>
           </group>
           <group>
             <field name="user_id"/>
             <field name="legal_form_ids" widget="many2many_tags" string="Legal Form Filter" options="{'no_create': True, 'no_quick_create': True}" context="{'active_test': False}"/>
+            <field name="has_mobile"/>
           </group>
         </group>
         <footer>
