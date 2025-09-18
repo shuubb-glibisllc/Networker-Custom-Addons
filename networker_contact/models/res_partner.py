@@ -1,8 +1,20 @@
 # -*- coding: utf-8 -*-
-from odoo import models, _
+from odoo import models, fields, api, _
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
+
+    has_crm_opportunity = fields.Boolean(
+        string="Has CRM Opportunity",
+        compute="_compute_has_crm_opportunity",
+        store=True,
+        help="Indicates if this contact is linked to any CRM opportunity."
+    )
+
+    @api.depends('opportunity_ids')
+    def _compute_has_crm_opportunity(self):
+        for partner in self:
+            partner.has_crm_opportunity = bool(partner.opportunity_ids)
 
     def action_napr_fetch(self):
         self.ensure_one()

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Google Account connection to User Preferences -->
+    <record id="view_users_form_google_meet" model="ir.ui.view">
+        <field name="name">res.users.form.google.meet</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <page name="preferences" position="after">
+                <page string="Google Meet" name="google_meet">
+                    <group>
+                        <group>
+                            <field name="google_auth_status" readonly="1"/>
+                            <field name="google_auth_email" readonly="1"/>
+                        </group>
+                        <group>
+                            <button name="action_connect_google" string="Connect Google Account" type="object" class="btn-primary" invisible="google_auth_status == 'connected'"/>
+                            <button name="action_disconnect_google" string="Disconnect Google Account" type="object" class="btn-warning" invisible="google_auth_status != 'connected'" confirm="Are you sure you want to disconnect your Google account?"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-info" role="alert" invisible="google_auth_status == 'connected'">
+                        <p><strong>Connect your Google account</strong> to create Google Meet meetings directly from Odoo calendar events.</p>
+                        <p>Your Google account will be used to:</p>
+                        <ul>
+                            <li>Create Google Meet conference links</li>
+                            <li>Add events to your Google Calendar</li>
+                            <li>Manage meeting attendees</li>
+                        </ul>
+                    </div>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

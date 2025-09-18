@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_res_partner_filter_inherit_networker_contact" model="ir.ui.view">
+        <field name="name">res.partner.select.inherit.networker.contact</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='inactive']" position="after">
+                <filter string="Has CRM Opportunity" name="has_crm_opportunity" domain="[('has_crm_opportunity', '=', True)]"/>
+                <filter string="No CRM Opportunity" name="no_crm_opportunity" domain="[('has_crm_opportunity', '=', False)]"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

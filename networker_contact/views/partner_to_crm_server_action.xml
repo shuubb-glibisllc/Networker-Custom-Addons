@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_partner_to_crm_wizard_corrected" model="ir.actions.server">
+            <field name="name">Convert to CRM Leads</field>
+            <field name="model_id" ref="base.model_res_partner"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="state">code</field>
+            <field name="code">
+action = {
+    "type": "ir.actions.act_window",
+    "name": "Convert to CRM Leads",
+    "res_model": "partner.to.crm.wizard",
+    "view_mode": "form",
+    "target": "new",
+    "context": env.context
+}
+            </field>
+        </record>
+    </data>
+</odoo>

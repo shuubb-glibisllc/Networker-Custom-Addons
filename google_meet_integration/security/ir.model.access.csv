@@ -1,1 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_google_user_auth_user,google.user.auth.user,model_google_user_auth,base.group_user,1,1,1,1
+access_google_user_auth_manager,google.user.auth.manager,model_google_user_auth,base.group_system,1,1,1,1
+access_google_connect_wizard_user,google.connect.wizard.user,model_google_connect_wizard,base.group_user,1,1,1,1

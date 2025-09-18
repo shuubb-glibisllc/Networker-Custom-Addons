@@ -36,35 +36,41 @@ Each addon follows standard Odoo module structure with:
 ## Development Commands
 
 ### Odoo Server
+The `odoo.conf` file includes multiple addon paths. Use the full path for development:
+
 ```bash
-# Start development server with auto-reload
-python odoo-bin -c custom_addons/odoo.conf --addons-path=/home/shuubb/Desktop/networker_odoo/custom_addons --dev=reload
+# Start development server with auto-reload (from project root)
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf --dev=reload
 
 # Install specific addon
-python odoo-bin -c custom_addons/odoo.conf -d database_name -i addon_name
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf -d database_name -i addon_name
 
-# Update addon
-python odoo-bin -c custom_addons/odoo.conf -d database_name -u addon_name
+# Update addon (recommended for development)
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf -d database_name -u addon_name
+
+# Update all custom addons
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf -d database_name -u custom_email_handler,google_meet_integration,networker_contact,networker_crm
 
 # Run tests for specific addon
-python odoo-bin -c custom_addons/odoo.conf -d database_name -i addon_name --test-enable
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf -d database_name -i addon_name --test-enable --stop-after-init
 ```
 
 ### Database Management
 ```bash
-# Create new database
-python odoo-bin -c custom_addons/odoo.conf -d new_database --init=base --stop-after-init
+# Create new database with custom addons
+python3 /usr/lib/python3/dist-packages/odoo/odoo-bin -c /home/shuubb/Desktop/networker_odoo/custom_addons/odoo.conf -d new_database --init=base --stop-after-init
 
-# Drop database (be careful!)
-dropdb database_name
+# Drop database (PostgreSQL command)
+dropdb -h localhost -U odoo database_name
 ```
 
 ### Development Configuration
 The `odoo.conf` file is configured for development with:
-- Debug logging enabled
-- Database connection to localhost PostgreSQL
-- Custom addons path pre-configured
+- Debug logging enabled for email handlers
+- Multiple addon paths including central Odoo installation
+- Database connection to localhost PostgreSQL (user: odoo)
 - Admin password: `Sazamtro1!` (development only)
+- Database list enabled for development
 
 ## Key Implementation Patterns
 
@@ -119,3 +125,20 @@ The `networker_crm` module includes frontend JavaScript:
 - `static/src/css/hide_iap.css`: UI styling overrides
 
 Assets are loaded through the `web.assets_backend` bundle in the manifest file.
+
+## Development Tools
+
+### Odoo RAG Helper
+The `odoo_helper.py` script links to a central RAG installation for Odoo documentation:
+- Location: `/home/shuubb/Desktop/Odoo AI`
+- Functions: `quick_search()`, `search_models()`, `search_views()`, `search_security()`, `search_api()`
+- Use for quick documentation lookup during development
+
+### Module Dependencies
+Module dependency chain for proper installation order:
+1. `custom_email_handler` → depends on: `base`, `mail`
+2. `google_meet_integration` → depends on: `base`, `calendar`, `contacts`, `google_calendar`
+3. `networker_contact` → depends on: `base`, `contacts`, `crm`
+4. `networker_crm` → depends on: `web`, `crm`
+
+Install in order or use `--init=all` for automatic dependency resolution.

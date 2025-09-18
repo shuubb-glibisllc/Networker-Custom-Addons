@@ -8,18 +8,20 @@
     <field name="arch" type="xml">
       <form string="Convert Contacts to CRM Leads">
         <sheet>
+          <div class="alert alert-warning" role="alert">
+            This wizard will create new CRM Opportunities for the selected contacts. Please ensure all fields are correctly filled.
+          </div>
+          <group>
+            <field name="partner_ids" widget="many2many_tags" readonly="1" string="Selected Contacts"/>
+          </group>
           <group>
             <group>
-              <field name="partner_ids" widget="many2many_tags" readonly="1" string="Selected Contacts"/>
               <field name="team_id" required="1"/>
               <field name="stage_id" required="1"/>
               <field name="user_id"/>
             </group>
             <group>
               <field name="priority"/>
-              <field name="source_id"/>
-              <field name="medium_id"/>
-              <field name="campaign_id"/>
             </group>
           </group>
           <group>

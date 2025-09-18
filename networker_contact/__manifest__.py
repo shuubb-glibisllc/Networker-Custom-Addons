@@ -7,6 +7,8 @@
         "views/res_partner_view.xml",
         "views/napr_fetch_wizard_views.xml",
         "views/partner_to_crm_wizard_views.xml",
+        "views/partner_to_crm_server_action.xml",
+        "views/res_partner_search_view_inherit.xml",
     ],
     "license": "LGPL-3",
 }

@@ -7,8 +7,8 @@ class PartnerToCrmWizard(models.TransientModel):
     _description = "Convert Partners to CRM Leads"
 
     partner_ids = fields.Many2many("res.partner", string="Selected Contacts")
-    team_id = fields.Many2one("crm.team", string="Sales Team", required=True)
-    stage_id = fields.Many2one("crm.stage", string="Stage", required=True)
+    team_id = fields.Many2one("crm.team", string="Sales Team")
+    stage_id = fields.Many2one("crm.stage", string="Stage")
     user_id = fields.Many2one("res.users", string="Salesperson")
     priority = fields.Selection([
         ('0', 'Low'),
@@ -16,9 +16,6 @@ class PartnerToCrmWizard(models.TransientModel):
         ('2', 'High'),
         ('3', 'Very High')
     ], string="Priority", default='1')
-    source_id = fields.Many2one("utm.source", string="Source")
-    medium_id = fields.Many2one("utm.medium", string="Medium")
-    campaign_id = fields.Many2one("utm.campaign", string="Campaign")
     description = fields.Text(string="Internal Notes")
 
     @api.onchange('team_id')
@@ -48,27 +45,17 @@ class PartnerToCrmWizard(models.TransientModel):
     def action_convert_to_crm(self):
         """Convert selected partners to CRM leads"""
         self.ensure_one()
+        Lead = self.env['crm.lead']
+
+        if not self.team_id or not self.stage_id:
+            raise UserError(_("Please select a Sales Team and a Stage before converting."))
         
         if not self.partner_ids:
             raise UserError(_("No contacts selected for conversion."))
         
-        # Check if any partners can be converted (don't have any existing leads)
-        Lead = self.env['crm.lead']
-        convertible_partners = []
-        
-        for partner in self.partner_ids:
-            existing_leads = Lead.search([
-                ('partner_id', '=', partner.id)
-            ], limit=1)
-            if not existing_leads:
-                convertible_partners.append(partner)
-        
-        if not convertible_partners:
-            raise UserError(_("All selected contacts already have linked leads and cannot be converted."))
-        
         leads_created = []
         
-        for partner in convertible_partners:
+        for partner in self.partner_ids:
             # Create new lead (we already filtered out partners with existing leads)
             vals = self._prepare_lead_values(partner)
             lead = Lead.create(vals)
@@ -89,7 +76,7 @@ class PartnerToCrmWizard(models.TransientModel):
                 'type': 'ir.actions.act_window',
                 'name': _('CRM Leads'),
                 'res_model': 'crm.lead',
-                'view_mode': 'tree,form',
+                'view_mode': 'list,form',
                 'domain': [('id', 'in', [lead.id for lead in leads_created])],
                 'target': 'current',
             }
@@ -116,7 +103,7 @@ class PartnerToCrmWizard(models.TransientModel):
             'source_id': self.source_id.id if self.source_id else False,
             'medium_id': self.medium_id.id if self.medium_id else False,
             'campaign_id': self.campaign_id.id if self.campaign_id else False,
-            'type': 'lead',
+            'type': 'opportunity',
         }
         
         if self.description:

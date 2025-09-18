@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Google User Authentication List View -->
+    <record id="view_google_user_auth_list" model="ir.ui.view">
+        <field name="name">google.user.auth.list</field>
+        <field name="model">google.user.auth</field>
+        <field name="arch" type="xml">
+            <list string="Google Account Connections">
+                <field name="user_id"/>
+                <field name="google_email"/>
+                <field name="is_active"/>
+                <field name="last_sync"/>
+                <field name="token_expires_at"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Google User Authentication Form View -->
+    <record id="view_google_user_auth_form" model="ir.ui.view">
+        <field name="name">google.user.auth.form</field>
+        <field name="model">google.user.auth</field>
+        <field name="arch" type="xml">
+            <form string="Google Account Connection">
+                <header>
+                    <button name="refresh_access_token" string="Refresh Token" type="object" class="btn-primary" confirm="Are you sure you want to refresh the access token?"/>
+                    <button name="test_connection" string="Test Connection" type="object" class="btn-secondary"/>
+                    <button name="revoke_access" string="Revoke Access" type="object" class="btn-warning" confirm="Are you sure you want to revoke Google access? This will disable Google Meet creation for this user."/>
+                    <field name="is_active" widget="boolean_toggle"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="google_email"/>
+                            <field name="last_sync"/>
+                        </group>
+                        <group>
+                            <field name="token_expires_at"/>
+                            <field name="access_token" password="True" readonly="1"/>
+                            <field name="refresh_token" password="True" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Google User Authentication Action -->
+    <record id="action_google_user_auth" model="ir.actions.act_window">
+        <field name="name">Google Account Connections</field>
+        <field name="res_model">google.user.auth</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_google_user_auth_list"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No Google account connections found.
+            </p>
+            <p>
+                Users can connect their Google accounts to create Google Meet meetings from Odoo calendar events.
+            </p>
+        </field>
+    </record>
+
+    <!-- My Google Account Action (filtered to current user) -->
+    <record id="action_my_google_auth" model="ir.actions.act_window">
+        <field name="name">My Google Account Connection</field>
+        <field name="res_model">google.user.auth</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('user_id', '=', uid)]</field>
+        <field name="context">{'default_user_id': uid}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                You haven't connected your Google account yet.
+            </p>
+            <p>
+                <a href="/google_meet/oauth/connect" class="btn btn-primary">Connect Google Account</a>
+            </p>
+            <p>
+                Connect your Google account to create Google Meet meetings directly from Odoo calendar events.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <!-- Create top-level Google Meet menu -->
+    <menuitem id="menu_google_meet_root" name="Google Meet" sequence="100"/>
+    
+    <menuitem id="menu_my_google_auth" name="My Google Account" parent="menu_google_meet_root" action="action_my_google_auth" sequence="10"/>
+    
+    <menuitem id="menu_google_user_auth" name="All User Connections" parent="menu_google_meet_root" action="action_google_user_auth" sequence="20" groups="base.group_system"/>
+    
+    <!-- Also add under Settings for admins -->
+    <menuitem id="menu_google_meet_settings" name="Google Meet Settings" parent="base.menu_administration" sequence="100" groups="base.group_system"/>
+    
+    <menuitem id="menu_google_user_auth_settings" name="Google User Connections" parent="menu_google_meet_settings" action="action_google_user_auth" sequence="10" groups="base.group_system"/>
+
+</odoo>
